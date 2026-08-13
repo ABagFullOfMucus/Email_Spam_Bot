@@ -1,2 +1,8 @@
-playwright
-python-dotenv
+# Runtime dependencies (kept in sync with pyproject.toml [project] dependencies)
+python-dotenv>=1.0.1
+
+# Development dependencies (install with: pip install -e ".[dev]")
+pytest>=8.3.0
+pytest-mock>=3.14.0
+ruff>=0.6.0
+mypy>=1.11.0
