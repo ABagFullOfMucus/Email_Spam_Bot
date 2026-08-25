@@ -2,7 +2,7 @@ name: scheduled-email
 
 on:
   schedule:
-    - cron: "0 19 * * *"   # giờ chạy
+    - cron: "0 19 * * *"   # scheduled hour 
   workflow_dispatch:
 
 jobs:
