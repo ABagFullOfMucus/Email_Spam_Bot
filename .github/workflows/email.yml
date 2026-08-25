@@ -16,7 +16,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      - run: pip install -r requirements.txt
+      # Zero runtime dependencies — no pip install step needed.
+      # Attachments: commit images into ./attachments/ and they are sent
+      # automatically with every scheduled run (checked out with the repo).
 
       - run: python main.py
         env:

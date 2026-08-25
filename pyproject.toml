@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "email-spam-bot"
-version = "1.0.0"
-description = "A professional, reliable email bot with retry logic, HTML support, and CI-ready configuration."
+version = "1.1.0"
+description = "A reliable, zero-dependency email bot with retries, attachments, multi-recipient support, and CI-ready configuration."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -24,9 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Communications :: Email",
 ]
-dependencies = [
-    "python-dotenv>=1.0.1",
-]
+dependencies = []  # zero runtime dependencies — standard library only
 
 [project.optional-dependencies]
 dev = [

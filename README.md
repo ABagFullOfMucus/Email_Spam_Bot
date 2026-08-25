@@ -5,6 +5,9 @@ A professional, reliable SMTP email bot with retry logic, HTML support, CLI cont
 ## Features
 
 - 🔁 **Automatic retries** — configurable attempts with backoff delay for transient SMTP failures
+- 📎 **Folder-based attachments** — drop files into `attachments/` and they're sent automatically (any type: images, PDFs, zips…)
+- 👥 **Multi-recipient** — comma-separated `TO_EMAIL`, one SMTP session delivers to all addresses
+- 🪶 **Zero dependencies** — pure standard library; nothing to pip-install at runtime or in CI
 - ✉️ **Plain-text and HTML bodies** — multipart/alternative emails supported
 - 🛡️ **Validation-first** — clear error messages for missing configuration
 - 🔐 **SMTP SSL/TLS support** — works with Gmail (SSL) and other providers (STARTTLS)
@@ -53,7 +56,7 @@ cp .env.example .env
 | ---------------- | :------: | -------------- | ----------------------------------------------- |
 | `EMAIL`          | ✅       | —              | Sender email address                            |
 | `EMAIL_PASSWORD` | ✅       | —              | SMTP app password                               |
-| `TO_EMAIL`       | ✅       | —              | Recipient email address                         |
+| `TO_EMAIL`       | ✅       | —              | Recipient(s), comma-separated                   |
 | `MESSAGE`        | ✅*      | —              | Plain-text body (*required unless `MESSAGE_HTML`) |
 | `MESSAGE_HTML`   | ❌       | —              | HTML body (creates a multipart email)           |
 | `SUBJECT`        | ❌       | `Tama bel fee` | Email subject                                   |
@@ -63,6 +66,9 @@ cp .env.example .env
 | `USE_TLS`        | ❌       | `false`        | Use `STARTTLS` instead of implicit SSL          |
 | `MAX_RETRIES`    | ❌       | `3`            | Number of delivery attempts                     |
 | `RETRY_DELAY`    | ❌       | `2`            | Seconds between attempts                        |
+| `ATTACHMENTS_DIR`   | ❌    | `attachments/` | Folder whose files are auto-attached every run  |
+| `MAX_ATTACHMENT_MB` | ❌    | `20`           | Fail fast if attachments exceed this total size |
+| `DISABLE_ATTACHMENTS` | ❌  | `false`        | Ignore the attachments folder entirely          |
 
 ### Gmail App Passwords
 
@@ -78,6 +84,30 @@ Google no longer allows normal account passwords for SMTP. Instead:
 
 ```bash
 python main.py
+```
+
+### Send with attachments
+
+Drop files into `attachments/` — every scheduled or manual run sends them automatically:
+
+```bash
+cp ~/photo.jpg attachments/
+python main.py
+```
+
+Or control attachments per-run:
+
+```bash
+python main.py --attach-dir /path/to/images      # different folder
+python main.py --attach photo.jpg --attach notes.pdf  # explicit files
+python main.py --no-attach                        # text-only run
+```
+
+### Quick ad-hoc send (no .env edits)
+
+```bash
+python main.py --to alice@example.com,bob@example.com --subject Hi --message Yo
+make send ARGS='--subject Hi --message Yo'
 ```
 
 ### Validate configuration without sending
@@ -144,6 +174,8 @@ Then use a scheduled or manual dispatch workflow, e.g.:
     MESSAGE: ${{ secrets.MESSAGE }}
 ```
 
+The scheduled workflow (`.github/workflows/email.yml`) runs `main.py` directly — there is **no `pip install` step**, because the bot has zero runtime dependencies. Commit images into `attachments/` and every scheduled run sends them along automatically.
+
 ## Project Structure
 
 ```
@@ -154,8 +186,10 @@ Then use a scheduled or manual dispatch workflow, e.g.:
 │   └── ci.yml
 ├── .gitignore
 ├── .python-version        # Recommended Python version (pyenv)
+├── CHANGELOG.md             # Version history (Keep a Changelog format)
 ├── Makefile               # Common development tasks
 ├── README.md
+├── attachments/             # Drop files here — auto-attached on every run
 ├── email_sender.py        # Core email logic (config, message, delivery)
 ├── main.py                # CLI entry point
 ├── pyproject.toml         # Packaging & tool configuration

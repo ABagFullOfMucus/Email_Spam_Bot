@@ -1,4 +1,4 @@
-.PHONY: install dev-install lint format typecheck test check run dry-run clean
+.PHONY: install dev-install lint format typecheck test check run dry-run send clean
 
 # Install runtime dependencies
 install:
@@ -35,6 +35,12 @@ run:
 # Validate configuration without sending
 dry-run:
 	python main.py --dry-run
+
+# Quick ad-hoc send without editing .env, e.g.:
+#   make send ARGS='--to someone@example.com --subject Hi --message Yo'
+#   make send ARGS='--no-attach'
+send:
+	python main.py $(ARGS)
 
 # Remove build/test artifacts
 clean:
